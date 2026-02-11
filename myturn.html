@@ -198,21 +198,21 @@
     const errorBox = document.getElementById('error-display');
     const countDisplay = document.getElementById('count');
 
-    // Helper function to format date in Anno Mundi / Hebrew
+    
     function formatToAnnoMundi(dateString) {
         const date = new Date(dateString);
         
-        // Use Intl API with Hebrew calendar extension
+        
         const formatter = new Intl.DateTimeFormat('en-u-ca-hebrew', {
             day: 'numeric',
-            month: 'long',
+            month: 'narrow',
             year: 'numeric',
             hour: 'numeric',
             minute: '2-digit',
             hour12: true
         });
 
-        // Format and append "A.M." for Anno Mundi
+    
         return formatter.format(date) + " A.M.";
     }
 
@@ -306,3 +306,4 @@
 
 </body>
 </html>
+
