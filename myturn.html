@@ -68,7 +68,7 @@
         .notice-text {
             border: 1px solid #000;
             padding: 10px;
-            background-color: #FFFFE1; 
+            background-color: #FFFFE1;
             font-size: 11pt;
             margin-bottom: 20px;
         }
@@ -153,9 +153,7 @@
     </div>
 
     <div class="notice-text">
-        <strong>PUBLIC NOTICE:</strong> This digital docket is provided for the submission of formal inquiries. 
-        All entries are treated as permanent public records. Please ensure your statement is legible 
-        before filing. Anonymous submission is permitted under Decree 13:1-A.
+        <strong>PUBLIC NOTICE:</strong> This digital docket is provided for the submission of formal inquiries. All entries are treated as permanent public records. Please ensure your statement is legible before filing. Anonymous submission is permitted under Decree 13:1-A.
     </div>
 
     <div id="error-display" class="error-overlay"></div>
@@ -172,7 +170,7 @@
 
     <h2>ARCHIVED ENTRIES (PUBLIC RECORD)</h2>
     <div id="archiveList">
-        <p><i>Retrieving records...</i></p>
+        <p><i>Retrieving records from the vault...</i></p>
     </div>
     
     <div class="footer-nav">
@@ -199,6 +197,24 @@
     const archiveDiv = document.getElementById('archiveList');
     const errorBox = document.getElementById('error-display');
     const countDisplay = document.getElementById('count');
+
+    // Helper function to format date in Anno Mundi / Hebrew
+    function formatToAnnoMundi(dateString) {
+        const date = new Date(dateString);
+        
+        // Use Intl API with Hebrew calendar extension
+        const formatter = new Intl.DateTimeFormat('en-u-ca-hebrew', {
+            day: 'numeric',
+            month: 'long',
+            year: 'numeric',
+            hour: 'numeric',
+            minute: '2-digit',
+            hour12: true
+        });
+
+        // Format and append "A.M." for Anno Mundi
+        return formatter.format(date) + " A.M.";
+    }
 
     function reportError(msg) {
         errorBox.style.display = 'block';
@@ -242,7 +258,11 @@
             
             const docket = document.createElement('div');
             docket.className = 'docket-info';
-            docket.textContent = "DOCKET ID #" + record.id.toString().substring(0,8).toUpperCase() + " | FILED: " + new Date(record.created_at).toLocaleString();
+            
+            // Apply the Anno Mundi formatting here
+            const amDate = formatToAnnoMundi(record.created_at);
+            
+            docket.textContent = "DOCKET ID #" + record.id.toString().substring(0,8).toUpperCase() + " | FILED: " + amDate;
 
             row.appendChild(text);
             row.appendChild(docket);
@@ -285,6 +305,4 @@
 </script>
 
 </body>
-
 </html>
-
