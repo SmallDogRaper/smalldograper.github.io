@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>National Registry of Inquiries - Official Portal</title>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        body {
+            background-color: #D3D3D3; /* Classic Windows Gray */
+            color: #000000;
+            font-family: "Times New Roman", Times, serif;
+            margin: 0;
+            padding: 40px 20px;
+            line-height: 1.4;
+        }
+        #document-frame {
+            max-width: 750px;
+            margin: 0 auto;
+            border-left: 2px solid #FFF;
+            border-top: 2px solid #FFF;
+            border-right: 2px solid #808080;
+            border-bottom: 2px solid #808080;
+            padding: 30px;
+            background: #FFFFFF;
+            box-shadow: 2px 2px 0px #000;
+        }
+        .header-main {
+            text-align: center;
+            border-bottom: 4px double #000;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+        }
+        h1 {
+            font-size: 26pt;
+            margin: 0;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        .dept-name {
+            font-size: 12pt;
+            font-weight: bold;
+            margin-top: 5px;
+        }
+        h2 {
+            font-size: 14pt;
+            background-color: #000080; /* Navy Blue */
+            color: #FFFFFF;
+            padding: 4px 10px;
+            margin-top: 30px;
+            border: 1px solid #000;
+        }
+        .ledger-box {
+            float: right;
+            border: 2px inset #CCC;
+            background-color: #F0F0F0;
+            padding: 15px;
+            width: 220px;
+            margin-left: 20px;
+            font-size: 10pt;
+        }
+        .ledger-box b {
+            display: block;
+            border-bottom: 1px solid #999;
+            margin-bottom: 8px;
+            text-align: center;
+        }
+        .notice-text {
+            border: 1px solid #000;
+            padding: 10px;
+            background-color: #FFFFE1; /* Post-it Yellow */
+            font-size: 11pt;
+            margin-bottom: 20px;
+        }
+        textarea {
+            width: 100%;
+            box-sizing: border-box;
+            font-family: "Courier New", Courier, monospace;
+            border: 2px inset #808080;
+            padding: 8px;
+            background: #FFF;
+            font-size: 12pt;
+        }
+        .button-row {
+            margin-top: 15px;
+            text-align: right;
+        }
+        button {
+            border-left: 2px solid #FFF;
+            border-top: 2px solid #FFF;
+            border-right: 2px solid #000;
+            border-bottom: 2px solid #000;
+            background: #D3D3D3;
+            padding: 6px 20px;
+            font-family: "Times New Roman", serif;
+            font-weight: bold;
+            font-size: 12pt;
+            cursor: pointer;
+        }
+        button:active {
+            border-left: 2px solid #000;
+            border-top: 2px solid #000;
+            border-right: 2px solid #FFF;
+            border-bottom: 2px solid #FFF;
+        }
+        .entry-card {
+            border-bottom: 1px solid #808080;
+            padding: 15px 5px;
+            background: #FAFAFA;
+        }
+        .entry-card:nth-child(even) {
+            background: #FFFFFF;
+        }
+        .docket-info {
+            color: #444;
+            font-size: 9pt;
+            margin-top: 8px;
+            font-family: Arial, sans-serif;
+        }
+        .error-overlay {
+            border: 3px double #FF0000;
+            background-color: #FFF;
+            color: #FF0000;
+            padding: 15px;
+            margin: 15px 0;
+            font-weight: bold;
+            display: none;
+        }
+        .footer-nav {
+            margin-top: 60px;
+            font-size: 10pt;
+            text-align: center;
+            border-top: 1px solid #000;
+            padding-top: 15px;
+        }
+        a { color: #0000FF; }
+    </style>
+</head>
+<body>
+
+<div id="document-frame">
+    <div class="header-main">
+        <h1>National Registry</h1>
+        <div class="dept-name">BUREAU OF PUBLIC CORRESPONDENCE & GRIEVANCES</div>
+    </div>
+    
+    <div class="ledger-box">
+        <b>OFFICIAL LEDGER</b>
+        <p><strong>Docket Status:</strong> OPEN</p>
+        <p><strong>Archive Class:</strong> PUBLIC</p>
+        <p><strong>Registry Fee:</strong> WAIVED</p>
+        <p><strong>Forms Filed:</strong> <span id="count">Counting...</span></p>
+    </div>
+
+    <div class="notice-text">
+        <strong>PUBLIC NOTICE:</strong> This digital docket is provided for the submission of formal inquiries. 
+        All entries are treated as permanent public records. Please ensure your statement is legible 
+        before filing. Anonymous submission is permitted under Decree 404-A.
+    </div>
+
+    <div id="error-display" class="error-overlay"></div>
+
+    <h2>FORM 12-B: STATEMENT OF INQUIRY</h2>
+    <form id="submissionForm">
+        <p><i>Please enter your statement into the field below. No specialized formatting allowed.</i></p>
+        <textarea id="formContent" rows="8" placeholder="Begin statement..."></textarea>
+        <div class="button-row">
+            <span id="filing-status" style="margin-right: 15px; font-style: italic; font-size: 10pt;"></span>
+            <button type="submit" id="fileBtn">FILE STATEMENT</button>
+        </div>
+    </form>
+
+    <h2>ARCHIVED ENTRIES (PUBLIC RECORD)</h2>
+    <div id="archiveList">
+        <p><i>Retrieving paper records from the vault...</i></p>
+    </div>
+    
+    <div class="footer-nav">
+        &copy; 1998-2024 National Registry Bureau <br>
+        [ <a href="#" onclick="location.reload()">Refresh Ledger</a> ] - [ <a href="#">Return to Top</a> ]
+    </div>
+</div>
+
+<script>
+    // --------------------------------------------------------
+    // REGISTRY CONFIGURATION
+    // --------------------------------------------------------
+    const REGISTRY_URL = 'https://uvfmjizgndhdtdfkgypq.supabase.co';
+    const REGISTRY_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InV2Zm1qaXpnbmRoZHRkZmtneXBxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzA3Njk3MjMsImV4cCI6MjA4NjM0NTcyM30.I7UDaGwR64ilGg5HMP39lMv4XWvi8WDbZ2_rloLWtdQ';
+    // --------------------------------------------------------
+
+    const { createClient } = window.supabase;
+    const bureauDB = createClient(REGISTRY_URL, REGISTRY_KEY);
+
+    const form = document.getElementById('submissionForm');
+    const contentArea = document.getElementById('formContent');
+    const fileBtn = document.getElementById('fileBtn');
+    const statusText = document.getElementById('filing-status');
+    const archiveDiv = document.getElementById('archiveList');
+    const errorBox = document.getElementById('error-display');
+    const countDisplay = document.getElementById('count');
+
+    function reportError(msg) {
+        errorBox.style.display = 'block';
+        errorBox.innerHTML = "OFFICIAL SYSTEM ERROR: " + msg;
+    }
+
+    async function loadArchive() {
+        const { data, error } = await bureauDB
+            .from('comments')
+            .select('id, content, created_at')
+            .order('created_at', { ascending: false })
+            .limit(50);
+
+        if (error) {
+            console.error('Bureau Database Error:', error);
+            reportError(error.message);
+            archiveDiv.innerHTML = '<p><i>Registry access denied.</i></p>';
+            return;
+        }
+
+        displayRecords(data);
+        if (data) countDisplay.textContent = data.length + " Registered";
+    }
+
+    function displayRecords(records) {
+        archiveDiv.innerHTML = ''; 
+
+        if (!records || records.length === 0) {
+            archiveDiv.innerHTML = '<p><i>The ledger is currently empty.</i></p>';
+            return;
+        }
+
+        records.forEach(record => {
+            const row = document.createElement('div');
+            row.className = 'entry-card';
+            
+            const text = document.createElement('p');
+            text.textContent = record.content;
+            text.style.whiteSpace = 'pre-wrap';
+            text.style.margin = '0';
+            
+            const docket = document.createElement('div');
+            docket.className = 'docket-info';
+            docket.textContent = "DOCKET ID #" + record.id.toString().substring(0,8).toUpperCase() + " | FILED: " + new Date(record.created_at).toLocaleString();
+
+            row.appendChild(text);
+            row.appendChild(docket);
+            archiveDiv.appendChild(row);
+        });
+    }
+
+    form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const content = contentArea.value.trim();
+        if (!content) return;
+
+        fileBtn.disabled = true;
+        fileBtn.textContent = 'STAMPING...';
+        statusText.textContent = 'Processing form...';
+        errorBox.style.display = 'none';
+
+        const { error } = await bureauDB
+            .from('comments')
+            .insert([{ content: content }]);
+
+        if (error) {
+            reportError(error.message);
+            statusText.textContent = 'Filing failed.';
+            statusText.style.color = 'red';
+        } else {
+            statusText.textContent = 'Form filed in archive.';
+            statusText.style.color = 'green';
+            contentArea.value = ''; 
+            loadArchive(); 
+        }
+
+        fileBtn.disabled = false;
+        fileBtn.textContent = 'FILE STATEMENT';
+    });
+
+    // Initial retrieval
+    loadArchive();
+
+</script>
+
+</body>
+</html>
