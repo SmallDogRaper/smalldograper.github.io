@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>National Registry of Inquiries - Official Portal</title>
+    <title>BUREAU OF PUBLIC CORRESPONDENCE & GRIEVANCES - Official Portal</title>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
         body {
@@ -140,7 +140,7 @@
 
 <div id="document-frame">
     <div class="header-main">
-        <h1>National Registry</h1>
+        <h1>Barony of Greater Massacoe</h1>
         <div class="dept-name">BUREAU OF PUBLIC CORRESPONDENCE & GRIEVANCES</div>
     </div>
     
@@ -155,14 +155,14 @@
     <div class="notice-text">
         <strong>PUBLIC NOTICE:</strong> This digital docket is provided for the submission of formal inquiries. 
         All entries are treated as permanent public records. Please ensure your statement is legible 
-        before filing. Anonymous submission is permitted under Decree 404-A.
+        before filing. Anonymous submission is permitted under Decree 13:1-A.
     </div>
 
     <div id="error-display" class="error-overlay"></div>
 
     <h2>FORM 12-B: STATEMENT OF INQUIRY</h2>
     <form id="submissionForm">
-        <p><i>Please enter your statement into the field below. No specialized formatting allowed.</i></p>
+        <p><i>Please enter your statement into the field below.</i></p>
         <textarea id="formContent" rows="8" placeholder="Begin statement..."></textarea>
         <div class="button-row">
             <span id="filing-status" style="margin-right: 15px; font-style: italic; font-size: 10pt;"></span>
@@ -172,11 +172,11 @@
 
     <h2>ARCHIVED ENTRIES (PUBLIC RECORD)</h2>
     <div id="archiveList">
-        <p><i>Retrieving paper records from the vault...</i></p>
+        <p><i>Retrieving records...</i></p>
     </div>
     
     <div class="footer-nav">
-        &copy; 1998-2024 National Registry Bureau <br>
+        &copy; 5758-5786 BUREAU OF PUBLIC CORRESPONDENCE & GRIEVANCES<br>
         [ <a href="#" onclick="location.reload()">Refresh Ledger</a> ] - [ <a href="#">Return to Top</a> ]
     </div>
 </div>
@@ -256,7 +256,7 @@
         if (!content) return;
 
         fileBtn.disabled = true;
-        fileBtn.textContent = 'STAMPING...';
+        fileBtn.textContent = 'SUBMITTING...';
         statusText.textContent = 'Processing form...';
         errorBox.style.display = 'none';
 
@@ -285,4 +285,5 @@
 </script>
 
 </body>
+
 </html>
